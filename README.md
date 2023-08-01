@@ -20,7 +20,7 @@ found within our blog post [blindsiding auditd for fun and profit](https://code-
 
 Since *daphne* is only a proof of concept, the supported functionalities
 are limited. *daphne* can run in two different modes that tamper audit
-events in different ways. When runnin with two command line arguments,
+events in different ways. When running with two command line arguments,
 *daphne* expects the first argument to be the *auditd* process ID and the
 second one to be a string that should be hidden from audit logs. Each event
 message containing the specified string is then going to be dropped.
@@ -49,8 +49,8 @@ While *daphne* is running, all events containing the string *pid=1337*
 get dropped before being logged.
 
 When running *daphne* with three arguments instead, *daphne* replaces all
-occurences of the second argument with the third argument within the audit
-logs. In the following example, we replace each occurence of `/etc/shadow` 
+occurrences of the second argument with the third argument within the audit
+logs. In the following example, we replace each occurrence of `/etc/shadow` 
 with `/etc/hosts`:
 
 ```console
@@ -91,13 +91,13 @@ In this README, we only provide an overview of possible detection methods:
 
 1. Monitoring the *ptrace* syscall using *auditd* itself makes *daphne* basically
   unusable. Despite *daphne* is smart enough to hide itself from *audit* events,
-  the sheer number of generated events is so high that a noticable system slowdown
-  is created. Since *daphne* needs to be continously attached to *auditd*, the event
+  the sheer number of generated events is so high that a noticeable system slowdown
+  is created. Since *daphne* needs to be continuously attached to *auditd*, the event
   queue is flooded with *ptrace* events. Other events will be processed with a
-  noticable slowdown that probably even increases over time.
+  noticeable slowdown that probably even increases over time.
 
-  The following listing shows a possible configuration copied from the [auditd repository](https://github.com/Neo23x0/auditd)
-  of [Florian Roth](https://twitter.com/cyb3rops):
+    The following listing shows a possible configuration copied from the [auditd repository](https://github.com/Neo23x0/auditd)
+    of [Florian Roth](https://twitter.com/cyb3rops):
 
     ```systemd
     ## Injection
