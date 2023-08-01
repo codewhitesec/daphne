@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - src/**
+      - include/**
+      - Makefile
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - src/**
+      - include/**
+      - Makefile
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: make
+        run: make
