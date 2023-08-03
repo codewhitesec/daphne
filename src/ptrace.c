@@ -85,7 +85,7 @@ bool ptrace_wait_syscall(pid_t pid)
  *     pointer to a buffer that contains the data. Must
  *     be freed by the caller
  */
-char* ptrace_get_string(pid_t pid, void* addr, size_t size) 
+char* ptrace_get_string(pid_t pid, void* addr, size_t size)
 {
     size_t long_size = sizeof(long);
     int    steps  = size / long_size;
@@ -94,7 +94,7 @@ char* ptrace_get_string(pid_t pid, void* addr, size_t size)
 
     int ctr = 0;
     ptrace_data pdata;
-    
+
     while (ctr < steps)
     {
         pdata.data = ptrace(PTRACE_PEEKDATA, pid, addr + ctr * long_size, 0);
@@ -130,14 +130,14 @@ char* ptrace_get_string(pid_t pid, void* addr, size_t size)
  *   Returns:
  *     void
  */
-void ptrace_set_string(pid_t pid, void* addr, char* string) 
+void ptrace_set_string(pid_t pid, void* addr, char* string)
 {
     int ctr = 0;
     int size = strlen(string) + 1;
 
     size_t long_size = sizeof(long);
     int    steps  = size / long_size;
-    
+
     while (ctr < steps)
     {
         ptrace(PTRACE_POKEDATA, pid, addr + ctr * long_size, *(long*)(string + ctr * long_size));
@@ -156,9 +156,7 @@ void ptrace_set_string(pid_t pid, void* addr, char* string)
         pdata.data = pdata.data << steps * 8;
 
         long last_value = *(long*)(string + ctr * long_size);
-
-        last_value = last_value >> (long_size - steps) * 8; 
-        last_value = last_value + pdata.data; 
+        last_value += pdata.data;
 
         ptrace(PTRACE_POKEDATA, pid, addr + ctr * long_size, last_value);
     }
@@ -179,13 +177,13 @@ void ptrace_set_string(pid_t pid, void* addr, char* string)
  *   Returns:
  *     void
  */
-void ptrace_clear_data(pid_t pid, void* addr, int size) 
+void ptrace_clear_data(pid_t pid, void* addr, int size)
 {
     int ctr = 0;
 
     size_t long_size = sizeof(long);
     int    steps  = size / long_size;
-    
+
     while (ctr < steps)
     {
         ptrace(PTRACE_POKEDATA, pid, addr + ctr * long_size, 0);
@@ -205,4 +203,24 @@ void ptrace_clear_data(pid_t pid, void* addr, int size)
 
         ptrace(PTRACE_POKEDATA, pid, addr + ctr * long_size, pdata.data);
     }
+}
+
+/*
+ * Function: ptrace_write_int
+ * ----------------------------
+ *   Write an int value to the specified address within the
+ *   specified process.
+ *
+ *   Parameters:
+ *     pid              pid of the tracee
+ *     addr             virtual address to write to
+ *     value            the int value to write
+ *
+ *   Returns:
+ *     void
+ */
+void ptrace_write_int(pid_t pid, void* addr, int value)
+{
+    long original = ptrace(PTRACE_PEEKDATA, pid, addr, 0) & 0xffffffff00000000;
+    ptrace(PTRACE_POKEDATA, pid, addr, original + value);
 }

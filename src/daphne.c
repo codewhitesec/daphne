@@ -150,7 +150,7 @@ int main(int argc, char** argv)
                     printf("[+] Replacing '%s' with '%s'.\n", argv[2], argv[3]);
 
                     ptrace_set_string(PID, (void*)regs.rsi + (payload - buffer), fake, regs.rax);
-                    *(unsigned int*)(buffer) = *(unsigned int*)(buffer) - strlen(payload) + regs.rax;
+                    ptrace_write_int(PID, (void*)regs.rsi, *(unsigned int*)(buffer) - strlen(payload) + strlen(fake));
 
                     ptrace(PTRACE_SETREGS, PID, 0, &regs);
                     free(fake);
